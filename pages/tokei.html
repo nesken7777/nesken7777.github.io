@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>サンプル</title>
+    <title>時計</title>
     <style>
         div {
             margin: auto;
@@ -22,8 +22,8 @@
             const start = new Date(0, 0, 1, 4, 30, 0);
             const end = new Date(0, 0, 1, 21, 30, 0);
             const percent = calculate(start, end, new Date());
-            document.getElementById("countup").innerHTML = `${percent[0]}%`;
-            document.getElementById("countdown").innerHTML = `${percent[1]}%`;
+            document.getElementById("countup").innerHTML = `${percent[0].toFixed(2)}%`;
+            document.getElementById("countdown").innerHTML = `${percent[1].toFixed(2)}%`;
         }
 
         window.onload = function () {
