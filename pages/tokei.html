@@ -17,62 +17,58 @@
 <body>
     <div id="countup"></div>
     <div id="countdown"></div>
+    <div id="isNight"></div>
     <script defer>
+        "use strict";
+        class ActiveTime {
+            constructor(start, end, now) {
+                const startSec_ = allSeconds(start);
+                const endSec = allSeconds(end);
+                const startSec = startSec_ > endSec ? startSec_ - 86400 : startSec_;
+                const startIsBiggerThanEnd = startSec_ > endSec ? true : false;
+                const nowSecAll = allSeconds(now);
+                this.is_night = startIsBiggerThanEnd ?
+                    ((nowSecAll >= endSec && (nowSecAll - 86400) <= startSec) ? true : false)
+                    : ((nowSecAll >= endSec || nowSecAll <= startSec) ? true : false);
+                if (this.is_night) {
+                    const sleepingStart = endSec;
+                    const sleepingEnd = startSec + 86400;
+                    this.modes_duration = sleepingEnd - sleepingStart;
+                    this.seconds = nowSecAll - sleepingStart < 0 ? nowSecAll - sleepingStart + 86400 : nowSecAll - sleepingStart;
+                }
+                else {
+                    this.seconds = nowSecAll - startSec;
+                    this.modes_duration = endSec - startSec;
+                }
+            }
+        }
+        function allSeconds(time) {
+            return time.getUTCHours() * 3600 + time.getUTCMinutes() * 60 + time.getUTCSeconds();
+        }
         function tokeiLoop() {
             const start = new Date(0, 0, 1, 4, 30, 0);
             const end = new Date(0, 0, 1, 21, 30, 0);
-            const percent = calculate(start, end, new Date());
-            document.getElementById("countup").innerHTML = `${percent[0].toFixed(2)}%`;
-            document.getElementById("countdown").innerHTML = `${percent[1].toFixed(2)}%`;
+            const activeTime = new ActiveTime(start, end, new Date());
+            const percent = calculate_percentage(activeTime);
+            if (activeTime.is_night) {
+                document.getElementById("countup").innerHTML = `-${percent[0].toFixed(2)}%`;
+                document.getElementById("countdown").innerHTML = `-${percent[1].toFixed(2)}%`;
+                document.getElementById("isNight").innerHTML = `Night`;
+            }
+            else {
+                document.getElementById("countup").innerHTML = `${percent[0].toFixed(2)}%`;
+                document.getElementById("countdown").innerHTML = `${percent[1].toFixed(2)}%`;
+                document.getElementById("isNight").innerHTML = `Day`;
+            }
         }
-
         window.onload = function () {
             tokeiLoop();
             setInterval(tokeiLoop, 500);
+        };
+        function calculate_percentage(time) {
+            const percent = (time.seconds / time.modes_duration) * 100;
+            return [percent, 100 - percent];
         }
-
-        function calculate(start, end, now_time) {
-            let startIsBiggerThanEnd = false;
-            let sleepTime = false;
-            const nowSecAll = now_time.getUTCHours() * 3600 + now_time.getUTCMinutes() * 60 + now_time.getUTCSeconds();
-            let startSec = start.getUTCHours() * 3600 + start.getUTCMinutes() * 60 + start.getUTCSeconds();
-            let endSec = end.getUTCHours() * 3600 + end.getUTCMinutes() * 60 + end.getUTCSeconds();
-            let percent = 0;
-            if (startSec > endSec) {
-                startSec -= 86400;
-                startIsBiggerThanEnd = true;
-            }
-            const activable = endSec - startSec;
-            let activeNowSec = nowSecAll - startSec;
-            if (startIsBiggerThanEnd) {
-                if (nowSecAll >= endSec || (nowSecAll - 86400) <= startSec) {
-                    sleepTime = true;
-                }
-            } else {
-                if (nowSecAll >= endSec || nowSecAll <= startSec) {
-                    sleepTime = true;
-                }
-            }
-            if (sleepTime) {
-                const sleepingStart = endSec;
-                const sleepingEnd = startSec + 86400;
-                const sleepingDuration = sleepingEnd - sleepingStart;
-                activeNowSec = nowSecAll - sleepingStart;
-                if (activeNowSec < 0) {
-                    activeNowSec += 86400;
-                }
-                percent = -(activeNowSec / sleepingDuration) * 100;
-            } else {
-                percent = activeNowSec / activable * 100;
-            }
-            if (percent < 0) {
-                return [percent, (-100) - percent];
-            } else {
-                return [percent, 100 - percent];
-            }
-        }
-
-
     </script>
 </body>
 
