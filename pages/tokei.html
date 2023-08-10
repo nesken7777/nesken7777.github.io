@@ -37,7 +37,7 @@
                     this.seconds = nowSecAll - sleepingStart < 0 ? nowSecAll - sleepingStart + 86400 : nowSecAll - sleepingStart;
                 }
                 else {
-                    this.seconds = nowSecAll - startSec;
+                    this.seconds = nowSecAll - startSec_;
                     this.modes_duration = endSec - startSec;
                 }
             }
