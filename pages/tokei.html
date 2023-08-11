@@ -37,7 +37,7 @@
                     this.seconds = nowSecAll - sleepingStart < 0 ? nowSecAll - sleepingStart + 86400 : nowSecAll - sleepingStart;
                 }
                 else {
-                    this.seconds = nowSecAll - startSec_;
+                    this.seconds = (nowSecAll + startSec > 0) ? nowSecAll - startSec_ : nowSecAll - startSec;
                     this.modes_duration = endSec - startSec;
                 }
             }
@@ -50,16 +50,9 @@
             const end = new Date(0, 0, 1, 21, 30, 0);
             const activeTime = new ActiveTime(start, end, new Date());
             const percent = calculate_percentage(activeTime);
-            if (activeTime.is_night) {
-                document.getElementById("countup").innerHTML = `-${percent[0].toFixed(2)}%`;
-                document.getElementById("countdown").innerHTML = `-${percent[1].toFixed(2)}%`;
-                document.getElementById("isNight").innerHTML = `Night`;
-            }
-            else {
-                document.getElementById("countup").innerHTML = `${percent[0].toFixed(2)}%`;
-                document.getElementById("countdown").innerHTML = `${percent[1].toFixed(2)}%`;
-                document.getElementById("isNight").innerHTML = `Day`;
-            }
+            document.getElementById("countup").innerHTML = `${percent[0].toFixed(2)}%`;
+            document.getElementById("countdown").innerHTML = `${percent[1].toFixed(2)}%`;
+            document.getElementById("isNight").innerHTML = activeTime.is_night ? `Night` : `Day`;
         }
         window.onload = function () {
             tokeiLoop();
